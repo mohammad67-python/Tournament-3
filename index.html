@@ -1,164 +1,151 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>جام حذفی پینگ‌پنگ</title>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نمودار جام حذفی پینگ‌پنگ</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
+
     body {
+      font-family: 'Vazirmatn', sans-serif;
+      background-color: #f9f9f9;
       margin: 0;
       padding: 20px;
-      font-family: 'Vazirmatn', sans-serif;
-      background: linear-gradient(to right, #f8f9fa, #e0f7fa);
       direction: rtl;
     }
-    h2 {
+
+    h1 {
       text-align: center;
       margin-bottom: 30px;
     }
+
     .bracket {
       display: grid;
-      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 40px;
-      justify-content: center;
-      overflow-x: auto;
+      justify-items: center;
     }
+
     .round {
       display: flex;
       flex-direction: column;
-      align-items: center;
       gap: 60px;
       position: relative;
     }
+
     .match {
-      background: white;
-      border: 2px solid #d1d1d1;
-      border-radius: 16px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      padding: 20px;
+      background-color: white;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      padding: 10px 20px;
       min-width: 120px;
       text-align: center;
-      transition: all 0.3s ease-in-out;
       cursor: pointer;
-      position: relative;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
-    .match:hover {
-      transform: scale(1.05);
-      border-color: #26c6da;
-    }
-    .match.winner {
-      background-color: #26c6da;
+
+    .winner {
+      background-color: #4caf50;
       color: white;
-      font-weight: bold;
-      border-color: #0097a7;
+      border-color: #388e3c;
     }
-    .stage-title {
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-    .final-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+
     button {
-      margin: 30px auto;
       display: block;
-      background: #0097a7;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
+      margin: 30px auto;
+      padding: 10px 20px;
       font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #1976d2;
+      color: white;
       cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #007c91;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
 </head>
 <body>
-  <h2>نمودار جام حذفی پینگ‌پنگ</h2>
-  <button onclick="resetBracket()">🔄 ریست قرعه‌کشی</button>
-  <div class="bracket" id="bracket"></div>
+  <h1>جام حذفی پینگ‌پنگ - شیفت C</h1>
+  <div class="bracket" id="bracket">
+    <!-- مرحله 1 -->
+    <div class="round" id="round1">
+      <div class="match" id="m1a">صالح</div>
+      <div class="match" id="m1b">ناصر</div>
+      <div class="match" id="m2a">حمید</div>
+      <div class="match" id="m2b">مجید</div>
+      <div class="match" id="m3a">محمد</div>
+      <div class="match" id="m3b">امین</div>
+      <div class="match" id="m4a">فرزاد</div>
+      <div class="match" id="m4b">حسین</div>
+    </div>
+    <!-- نیمه نهایی -->
+    <div class="round" id="round2">
+      <div class="match" id="semi1"></div>
+      <div class="match" id="semi2"></div>
+      <div class="match" id="semi3"></div>
+      <div class="match" id="semi4"></div>
+    </div>
+    <!-- فینال -->
+    <div class="round" id="round3">
+      <div class="match" id="final1"></div>
+      <div class="match" id="final2"></div>
+    </div>
+    <!-- قهرمان -->
+    <div class="round" id="round4">
+      <div class="match" id="champion"></div>
+    </div>
+  </div>
+  <button onclick="resetBracket()">ریست قرعه‌کشی</button>
 
   <script>
-    const players = ["صالح", "ناصر", "حمید", "مجید", "محمد", "امین", "فرزاد", "حسین"];
-    let rounds = [];
+    const matchMap = {
+      'm1a': 'semi1', 'm1b': 'semi1',
+      'm2a': 'semi2', 'm2b': 'semi2',
+      'm3a': 'semi3', 'm3b': 'semi3',
+      'm4a': 'semi4', 'm4b': 'semi4',
+      'semi1': 'final1', 'semi2': 'final1',
+      'semi3': 'final2', 'semi4': 'final2',
+      'final1': 'champion', 'final2': 'champion'
+    };
 
-    function shuffle(arr) {
-      return arr.sort(() => Math.random() - 0.5);
-    }
+    const lines = [];
 
-    function buildInitialRounds() {
-      rounds = [];
-      let shuffled = shuffle([...players]);
-      rounds.push([]);
-      for (let i = 0; i < shuffled.length; i += 2) {
-        rounds[0].push([shuffled[i], shuffled[i + 1]]);
-      }
-    }
-
-    function renderBracket() {
-      const bracket = document.getElementById("bracket");
-      bracket.innerHTML = "";
-      const stages = ["یک‌چهارم نهایی", "نیمه‌نهایی", "فینال", "قهرمان"];
-
-      for (let i = 0; i < rounds.length; i++) {
-        const roundDiv = document.createElement("div");
-        roundDiv.className = "round";
-
-        const stageTitle = document.createElement("div");
-        stageTitle.className = "stage-title";
-        stageTitle.textContent = stages[i] || "مرحله بعد";
-        roundDiv.appendChild(stageTitle);
-
-        rounds[i].forEach((pair, index) => {
-          const match = document.createElement("div");
-          match.className = "match";
-
-          if (pair.length === 2) {
-            match.innerHTML = `${pair[0]}<br>vs<br>${pair[1]}`;
-            match.onclick = () => {
-              const winner = confirm(`${pair[0]} برنده شد؟ OK = بله / Cancel = ${pair[1]}`) ? pair[0] : pair[1];
-              if (!rounds[i + 1]) rounds[i + 1] = [];
-              rounds[i + 1][Math.floor(index / 2)] = rounds[i + 1][Math.floor(index / 2)] || [];
-              rounds[i + 1][Math.floor(index / 2)].push(winner);
-              renderBracket();
-            };
-          } else {
-            match.textContent = pair[0];
-            match.classList.add("winner");
-          }
-          roundDiv.appendChild(match);
-        });
-        bracket.appendChild(roundDiv);
-      }
-
-      // مرحله قهرمان نهایی
-      if (rounds.length === 4 && rounds[3].length === 1 && rounds[3][0].length === 1) {
-        const finalDiv = document.createElement("div");
-        finalDiv.className = "round final-box";
-        const winBox = document.createElement("div");
-        winBox.className = "match winner";
-        winBox.textContent = `🏆 قهرمان: ${rounds[3][0][0]}`;
-        finalDiv.appendChild(winBox);
-        bracket.appendChild(finalDiv);
-      }
-    }
+    document.querySelectorAll('.match').forEach(el => {
+      el.addEventListener('click', () => {
+        if (!el.innerText.trim()) return;
+        const nextId = matchMap[el.id];
+        if (!nextId) return;
+        const nextEl = document.getElementById(nextId);
+        nextEl.innerText = el.innerText;
+        nextEl.classList.add('winner');
+        drawLines();
+      });
+    });
 
     function resetBracket() {
-      buildInitialRounds();
-      renderBracket();
+      document.querySelectorAll('.match').forEach(el => {
+        const initial = el.id.match(/^m[1-4][ab]$/);
+        if (!initial) {
+          el.innerText = '';
+          el.classList.remove('winner');
+        }
+      });
+      lines.forEach(line => line.remove());
+      lines.length = 0;
     }
 
-    buildInitialRounds();
-    renderBracket();
+    function drawLines() {
+      lines.forEach(line => line.remove());
+      lines.length = 0;
+      for (const [fromId, toId] of Object.entries(matchMap)) {
+        const fromEl = document.getElementById(fromId);
+        const toEl = document.getElementById(toId);
+        if (fromEl && toEl && fromEl.innerText.trim()) {
+          lines.push(new LeaderLine(fromEl, toEl, {color: '#888', size: 2, path: 'straight'}));
+        }
+      }
+    }
   </script>
 </body>
 </html>
