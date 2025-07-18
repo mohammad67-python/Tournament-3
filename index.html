@@ -2,14 +2,14 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>جدول جام حذفی ۸ نفره</title>
+  <title>جام حذفی ۸ نفره</title>
   <style>
     body {
-      background-color: #111;
-      color: white;
+      background: #111;
+      color: #fff;
       font-family: sans-serif;
-      direction: rtl;
       padding: 40px;
+      direction: rtl;
     }
 
     h2 {
@@ -22,8 +22,8 @@
     .bracket {
       display: flex;
       justify-content: center;
-      align-items: center;
-      gap: 60px;
+      gap: 40px;
+      flex-wrap: wrap;
     }
 
     .round {
@@ -33,68 +33,47 @@
       position: relative;
     }
 
-    .match {
+    .game {
       background: #222;
       border: 2px solid #555;
       border-radius: 10px;
-      padding: 10px 20px;
-      text-align: center;
-      min-width: 140px;
-      cursor: pointer;
-      transition: 0.3s;
-      position: relative;
+      padding: 10px;
+      min-width: 160px;
+      cursor: default;
     }
 
-    .match:hover {
-      background: #333;
+    .player {
+      padding: 6px 10px;
+      margin: 4px 0;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+
+    .player:hover {
+      background: #444;
+      cursor: pointer;
     }
 
     .winner {
       background: #2e7d32 !important;
-      border-color: #81c784;
       color: #fff;
     }
 
-    .line-right {
-      position: absolute;
-      top: 50%;
-      right: -30px;
-      width: 30px;
-      height: 2px;
-      background: #888;
-    }
-
-    .line-down {
-      position: absolute;
-      right: -30px;
-      width: 2px;
-      height: 80px;
-      background: #888;
-    }
-
-    .connector {
-      position: absolute;
-      right: -30px;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-
-    .champion-label {
+    .champion-box {
       text-align: center;
       color: gold;
-      margin-top: 10px;
       font-weight: bold;
+      margin-top: 10px;
     }
 
     button {
+      margin: 40px auto;
+      display: block;
       background: gold;
       color: black;
       border: none;
       padding: 10px 20px;
       border-radius: 10px;
-      margin: 40px auto;
-      display: block;
-      font-weight: bold;
       font-size: 16px;
       cursor: pointer;
     }
@@ -106,106 +85,87 @@
 
 <div class="bracket">
   <!-- مرحله اول -->
-  <div class="round">
-    <div class="match" id="m1a">صالح<div class="line-right"></div></div>
-    <div class="match" id="m1b">ناصر<div class="line-right"></div></div>
-    <div class="match" id="m2a">حمید<div class="line-right"></div></div>
-    <div class="match" id="m2b">مجید<div class="line-right"></div></div>
-    <div class="match" id="m3a">محمد<div class="line-right"></div></div>
-    <div class="match" id="m3b">امین<div class="line-right"></div></div>
-    <div class="match" id="m4a">فرزاد<div class="line-right"></div></div>
-    <div class="match" id="m4b">حسین<div class="line-right"></div></div>
+  <div class="round" id="round1">
+    <div class="game" data-next="q1">
+      <div class="player">صالح</div>
+      <div class="player">ناصر</div>
+    </div>
+    <div class="game" data-next="q2">
+      <div class="player">حمید</div>
+      <div class="player">مجید</div>
+    </div>
+    <div class="game" data-next="q3">
+      <div class="player">محمد</div>
+      <div class="player">امین</div>
+    </div>
+    <div class="game" data-next="q4">
+      <div class="player">فرزاد</div>
+      <div class="player">حسین</div>
+    </div>
   </div>
 
-  <!-- یک‌چهارم -->
-  <div class="round">
-    <div class="match" id="q1">‌<div class="line-right"></div></div>
-    <div class="match" id="q2"><div class="line-right"></div></div>
-    <div class="match" id="q3"><div class="line-right"></div></div>
-    <div class="match" id="q4"><div class="line-right"></div></div>
+  <!-- مرحله یک چهارم -->
+  <div class="round" id="round2">
+    <div class="game" id="q1" data-next="s1"></div>
+    <div class="game" id="q2" data-next="s1"></div>
+    <div class="game" id="q3" data-next="s2"></div>
+    <div class="game" id="q4" data-next="s2"></div>
   </div>
 
-  <!-- نیمه نهایی -->
-  <div class="round">
-    <div class="match" id="s1"><div class="line-right"></div></div>
-    <div class="match" id="s2"><div class="line-right"></div></div>
+  <!-- نیمه‌نهایی -->
+  <div class="round" id="round3">
+    <div class="game" id="s1" data-next="f1"></div>
+    <div class="game" id="s2" data-next="f1"></div>
   </div>
 
   <!-- فینال -->
-  <div class="round">
-    <div class="match" id="f1"><div class="line-right"></div></div>
+  <div class="round" id="round4">
+    <div class="game" id="f1" data-next="champion"></div>
   </div>
 
   <!-- قهرمان -->
-  <div class="round">
-    <div class="match" id="champion"></div>
-    <div class="champion-label">🏆 قهرمان</div>
+  <div class="round" id="round5">
+    <div class="game" id="champion"></div>
+    <div class="champion-box">🏆 قهرمان</div>
   </div>
 </div>
 
-<button onclick="resetTournament()">ریست</button>
+<button onclick="resetBracket()">ریست</button>
 
 <script>
-  const matchMap = {
-    m1a: 'q1', m1b: 'q1',
-    m2a: 'q2', m2b: 'q2',
-    m3a: 'q3', m3b: 'q3',
-    m4a: 'q4', m4b: 'q4',
-    q1: 's1', q2: 's1',
-    q3: 's2', q4: 's2',
-    s1: 'f1', s2: 'f1',
-    f1: 'champion'
-  };
-
-  const stagePairs = {
-    q1: ['m1a', 'm1b'],
-    q2: ['m2a', 'm2b'],
-    q3: ['m3a', 'm3b'],
-    q4: ['m4a', 'm4b'],
-    s1: ['q1', 'q2'],
-    s2: ['q3', 'q4'],
-    f1: ['s1', 's2'],
-    champion: ['f1']
-  };
-
-  function handleClick(e) {
-    const current = e.target.closest('.match');
-    const nextId = matchMap[current.id];
+  function handlePlayerClick(e) {
+    const selected = e.target;
+    const parentGame = selected.closest('.game');
+    const nextId = parentGame.dataset.next;
     if (!nextId) return;
 
-    const next = document.getElementById(nextId);
-    const participants = stagePairs[nextId] || [];
+    if (selected.classList.contains("winner")) return;
 
-    if (next.textContent.trim()) return;
+    // جلوگیری از انتخاب دوباره
+    parentGame.querySelectorAll('.player').forEach(p => p.classList.remove('winner'));
+    selected.classList.add('winner');
 
-    const alreadySelected = participants.some(id => {
-      const el = document.getElementById(id);
-      return el.classList.contains('winner');
-    });
+    const nextGame = document.getElementById(nextId);
+    if (!nextGame) return;
 
-    if (alreadySelected) return;
-
-    current.classList.add("winner");
-    next.textContent = current.textContent.trim();
-    next.classList.add("winner");
+    const p = document.createElement('div');
+    p.className = 'player';
+    p.textContent = selected.textContent;
+    nextGame.appendChild(p);
   }
 
-  function resetTournament() {
-    Object.keys(matchMap).forEach(id => {
-      const el = document.getElementById(id);
-      if (el && !id.startsWith('m')) {
-        el.textContent = '';
-        el.classList.remove('winner');
-        const line = document.createElement('div');
-        line.className = 'line-right';
-        el.appendChild(line);
+  function resetBracket() {
+    document.querySelectorAll('.game').forEach(game => {
+      if (!game.id.startsWith('q') && !game.id.startsWith('s') && game.id !== 'f1' && game.id !== 'champion') {
+        game.querySelectorAll('.player').forEach(p => p.classList.remove('winner'));
+      } else {
+        game.innerHTML = '';
       }
     });
-    document.querySelectorAll('.match').forEach(el => el.classList.remove('winner'));
   }
 
-  document.querySelectorAll('.match').forEach(el => {
-    el.addEventListener('click', handleClick);
+  document.querySelectorAll('.player').forEach(p => {
+    p.addEventListener('click', handlePlayerClick);
   });
 </script>
 
