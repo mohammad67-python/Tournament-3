@@ -1,173 +1,152 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <title>جام حذفی ۸ نفره</title>
+  <meta charset="UTF-8" />
+  <title>جام حذفی پینگ‌پنگ</title>
   <style>
     body {
-      background: #111;
-      color: #fff;
-      font-family: sans-serif;
-      padding: 40px;
+      font-family: Vazirmatn, sans-serif;
       direction: rtl;
-    }
-
-    h2 {
       text-align: center;
-      color: gold;
-      font-size: 28px;
-      margin-bottom: 40px;
+      background: #f9f9f9;
+      margin: 20px;
     }
-
     .bracket {
       display: flex;
-      justify-content: center;
-      gap: 40px;
-      flex-wrap: wrap;
+      justify-content: space-evenly;
+      align-items: center;
+      flex-direction: row-reverse;
+      flex-wrap: nowrap;
+      gap: 20px;
     }
-
-    .round {
+    .column {
       display: flex;
       flex-direction: column;
       gap: 40px;
-      position: relative;
     }
-
-    .game {
-      background: #222;
-      border: 2px solid #555;
-      border-radius: 10px;
-      padding: 10px;
-      min-width: 160px;
-      cursor: default;
-    }
-
-    .player {
-      padding: 6px 10px;
-      margin: 4px 0;
-      border-radius: 6px;
-      transition: 0.3s;
-    }
-
-    .player:hover {
-      background: #444;
+    .match {
+      padding: 10px 15px;
+      background: #fff;
+      border: 2px solid #ccc;
+      border-radius: 12px;
       cursor: pointer;
+      min-width: 100px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: all 0.2s;
     }
-
+    .match:hover {
+      background: #e0f7fa;
+    }
     .winner {
-      background: #2e7d32 !important;
-      color: #fff;
+      background: #a5d6a7 !important;
+      border-color: #388e3c !important;
     }
-
-    .champion-box {
-      text-align: center;
-      color: gold;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
     button {
-      margin: 40px auto;
-      display: block;
-      background: gold;
-      color: black;
-      border: none;
+      margin-top: 30px;
       padding: 10px 20px;
-      border-radius: 10px;
       font-size: 16px;
+      border: none;
+      background: #0288d1;
+      color: white;
+      border-radius: 8px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-<h2>جدول جام حذفی پینگ‌پنگ (۸ نفر)</h2>
-
-<div class="bracket">
-  <!-- مرحله اول -->
-  <div class="round" id="round1">
-    <div class="game" data-next="q1">
-      <div class="player">صالح</div>
-      <div class="player">ناصر</div>
+  <h2>نمودار جام حذفی پینگ‌پنگ</h2>
+  <div class="bracket">
+    <div class="column">
+      <div class="match" id="m1a">صالح</div>
+      <div class="match" id="m1b">ناصر</div>
+      <div class="match" id="m2a">حمید</div>
+      <div class="match" id="m2b">مجید</div>
+      <div class="match" id="m3a">محمد</div>
+      <div class="match" id="m3b">امین</div>
+      <div class="match" id="m4a">فرزاد</div>
+      <div class="match" id="m4b">حسین</div>
     </div>
-    <div class="game" data-next="q2">
-      <div class="player">حمید</div>
-      <div class="player">مجید</div>
+    <div class="column">
+      <div class="match" id="semi1"></div>
+      <div class="match" id="semi2"></div>
+      <div class="match" id="semi3"></div>
+      <div class="match" id="semi4"></div>
     </div>
-    <div class="game" data-next="q3">
-      <div class="player">محمد</div>
-      <div class="player">امین</div>
+    <div class="column">
+      <div class="match" id="final1"></div>
+      <div class="match" id="final2"></div>
     </div>
-    <div class="game" data-next="q4">
-      <div class="player">فرزاد</div>
-      <div class="player">حسین</div>
+    <div class="column">
+      <div class="match" id="champion"></div>
     </div>
   </div>
 
-  <!-- مرحله یک چهارم -->
-  <div class="round" id="round2">
-    <div class="game" id="q1" data-next="s1"></div>
-    <div class="game" id="q2" data-next="s1"></div>
-    <div class="game" id="q3" data-next="s2"></div>
-    <div class="game" id="q4" data-next="s2"></div>
-  </div>
+  <button onclick="resetTournament()">ریست مسابقات</button>
 
-  <!-- نیمه‌نهایی -->
-  <div class="round" id="round3">
-    <div class="game" id="s1" data-next="f1"></div>
-    <div class="game" id="s2" data-next="f1"></div>
-  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
+  <script>
+    const matchMap = {
+      'm1a': 'semi1', 'm1b': 'semi1',
+      'm2a': 'semi2', 'm2b': 'semi2',
+      'm3a': 'semi3', 'm3b': 'semi3',
+      'm4a': 'semi4', 'm4b': 'semi4',
+      'semi1': 'final1', 'semi2': 'final1',
+      'semi3': 'final2', 'semi4': 'final2',
+      'final1': 'champion', 'final2': 'champion'
+    };
 
-  <!-- فینال -->
-  <div class="round" id="round4">
-    <div class="game" id="f1" data-next="champion"></div>
-  </div>
+    const lines = [];
 
-  <!-- قهرمان -->
-  <div class="round" id="round5">
-    <div class="game" id="champion"></div>
-    <div class="champion-box">🏆 قهرمان</div>
-  </div>
-</div>
+    function drawLines() {
+      lines.forEach(line => line.remove());
+      lines.length = 0;
 
-<button onclick="resetBracket()">ریست</button>
+      setTimeout(() => {
+        for (const [fromId, toId] of Object.entries(matchMap)) {
+          const fromEl = document.getElementById(fromId);
+          const toEl = document.getElementById(toId);
+          if (fromEl && toEl && fromEl.textContent.trim()) {
+            lines.push(new LeaderLine(fromEl, toEl, {
+              color: '#888',
+              size: 2,
+              path: 'fluid',
+              startPlug: 'disc',
+              endPlug: 'arrow1'
+            }));
+          }
+        }
+      }, 300); // تأخیر برای رندر کامل DOM
+    }
 
-<script>
-  function handlePlayerClick(e) {
-    const selected = e.target;
-    const parentGame = selected.closest('.game');
-    const nextId = parentGame.dataset.next;
-    if (!nextId) return;
+    function handleClick(e) {
+      const el = e.target;
+      const nextId = matchMap[el.id];
+      if (!nextId) return;
 
-    if (selected.classList.contains("winner")) return;
+      const nextEl = document.getElementById(nextId);
+      if (!nextEl) return;
 
-    // جلوگیری از انتخاب دوباره
-    parentGame.querySelectorAll('.player').forEach(p => p.classList.remove('winner'));
-    selected.classList.add('winner');
+      nextEl.textContent = el.textContent;
+      nextEl.classList.add('winner');
+      drawLines();
+    }
 
-    const nextGame = document.getElementById(nextId);
-    if (!nextGame) return;
+    function resetTournament() {
+      document.querySelectorAll('.match').forEach(el => {
+        const id = el.id;
+        el.classList.remove('winner');
+        if (!id.startsWith('m')) el.textContent = '';
+      });
+      drawLines();
+    }
 
-    const p = document.createElement('div');
-    p.className = 'player';
-    p.textContent = selected.textContent;
-    nextGame.appendChild(p);
-  }
-
-  function resetBracket() {
-    document.querySelectorAll('.game').forEach(game => {
-      if (!game.id.startsWith('q') && !game.id.startsWith('s') && game.id !== 'f1' && game.id !== 'champion') {
-        game.querySelectorAll('.player').forEach(p => p.classList.remove('winner'));
-      } else {
-        game.innerHTML = '';
-      }
+    document.querySelectorAll('.match').forEach(el => {
+      el.addEventListener('click', handleClick);
     });
-  }
 
-  document.querySelectorAll('.player').forEach(p => {
-    p.addEventListener('click', handlePlayerClick);
-  });
-</script>
-
+    window.addEventListener('load', drawLines);
+    window.addEventListener('resize', drawLines);
+  </script>
 </body>
 </html>
