@@ -2,80 +2,55 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>جام حذفی پینگ‌پنگ</title>
+  <title>جام حذفی پینگ‌پنگ (۸ نفره)</title>
   <style>
     body {
-      background: #111;
+      background: #1c1c1c;
       color: #fff;
       font-family: sans-serif;
       direction: rtl;
-      padding: 20px;
+      padding: 30px;
     }
 
     h2 {
       text-align: center;
       color: gold;
+      font-size: 28px;
       margin-bottom: 40px;
     }
 
     .bracket {
       display: flex;
       justify-content: center;
-      align-items: center;
-      position: relative;
       gap: 40px;
+      flex-wrap: wrap;
     }
 
     .round {
       display: flex;
       flex-direction: column;
-      gap: 60px;
-      position: relative;
+      gap: 40px;
     }
 
     .match {
-      background: #222;
-      border: 2px solid #555;
+      background: #2b2b2b;
+      border: 2px solid #666;
       border-radius: 10px;
       padding: 10px 20px;
       text-align: center;
+      min-width: 140px;
       cursor: pointer;
-      position: relative;
       transition: 0.3s;
-      width: 140px;
     }
 
     .match:hover {
-      background: #333;
+      background: #3a3a3a;
     }
 
     .winner {
       background: #2e7d32 !important;
       border-color: #81c784;
       color: #fff;
-    }
-
-    .line {
-      position: absolute;
-      background: #888;
-      z-index: 0;
-    }
-
-    .line-h {
-      height: 2px;
-      width: 40px;
-      top: 50%;
-      right: -40px;
-    }
-
-    .line-v {
-      width: 2px;
-      height: 62px;
-      right: -40px;
-    }
-
-    .center {
-      align-items: center;
     }
 
     .champion-label {
@@ -94,7 +69,15 @@
       margin: 30px auto;
       display: block;
       font-weight: bold;
+      font-size: 16px;
       cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .bracket {
+        flex-direction: column;
+        align-items: center;
+      }
     }
   </style>
 </head>
@@ -103,13 +86,19 @@
 <h2>جام حذفی پینگ‌پنگ (۸ نفره)</h2>
 
 <div class="bracket">
-
   <!-- مرحله اول -->
   <div class="round">
     <div class="match" id="m1a">صالح</div>
+    <div class="match" id="m1b">ناصر</div>
+
     <div class="match" id="m2a">حمید</div>
+    <div class="match" id="m2b">مجید</div>
+
     <div class="match" id="m3a">محمد</div>
+    <div class="match" id="m3b">امین</div>
+
     <div class="match" id="m4a">فرزاد</div>
+    <div class="match" id="m4b">حسین</div>
   </div>
 
   <!-- یک‌چهارم -->
@@ -127,24 +116,25 @@
   </div>
 
   <!-- فینال -->
-  <div class="round center">
+  <div class="round">
     <div class="match" id="f1"></div>
   </div>
 
   <!-- قهرمان -->
-  <div class="round center">
+  <div class="round">
     <div class="match" id="champion"></div>
     <div class="champion-label">🏆 قهرمان</div>
   </div>
-
 </div>
 
 <button onclick="resetTournament()">ریست</button>
 
 <script>
   const matchMap = {
-    m1a: 'q1', m2a: 'q1',
-    m3a: 'q2', m4a: 'q2',
+    m1a: 'q1', m1b: 'q1',
+    m2a: 'q2', m2b: 'q2',
+    m3a: 'q3', m3b: 'q3',
+    m4a: 'q4', m4b: 'q4',
     q1: 's1', q2: 's1',
     q3: 's2', q4: 's2',
     s1: 'f1', s2: 'f1',
@@ -152,8 +142,10 @@
   };
 
   const stagePairs = {
-    q1: ['m1a', 'm2a'],
-    q2: ['m3a', 'm4a'],
+    q1: ['m1a', 'm1b'],
+    q2: ['m2a', 'm2b'],
+    q3: ['m3a', 'm3b'],
+    q4: ['m4a', 'm4b'],
     s1: ['q1', 'q2'],
     s2: ['q3', 'q4'],
     f1: ['s1', 's2'],
@@ -168,7 +160,6 @@
     const next = document.getElementById(nextId);
     const participants = stagePairs[nextId] || [];
 
-    // جلوگیری از ورود بیش از یک بازیکن
     if (next.textContent.trim()) return;
 
     const alreadySelected = participants.some(id => {
