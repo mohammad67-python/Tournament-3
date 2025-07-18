@@ -2,60 +2,91 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>جام حذفی پینگ‌پنگ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: sans-serif;
-      background: #f0f0f0;
       margin: 0;
       padding: 20px;
+      font-family: 'Vazirmatn', sans-serif;
+      background: linear-gradient(to right, #f8f9fa, #e0f7fa);
       direction: rtl;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
     }
     .bracket {
       display: grid;
-      grid-template-columns: repeat(4, 200px);
-      gap: 20px;
-      overflow-x: auto;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      gap: 40px;
       justify-content: center;
+      overflow-x: auto;
     }
     .round {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 40px;
+      gap: 60px;
       position: relative;
     }
     .match {
-      background: #fff;
-      border: 2px solid #ccc;
-      border-radius: 10px;
-      padding: 10px;
-      text-align: center;
-      cursor: pointer;
+      background: white;
+      border: 2px solid #d1d1d1;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
       min-width: 120px;
+      text-align: center;
+      transition: all 0.3s ease-in-out;
+      cursor: pointer;
       position: relative;
     }
+    .match:hover {
+      transform: scale(1.05);
+      border-color: #26c6da;
+    }
     .match.winner {
-      background-color: #4caf50;
+      background-color: #26c6da;
       color: white;
-      border-color: #388e3c;
+      font-weight: bold;
+      border-color: #0097a7;
     }
-    h2 {
-      text-align: center;
+    .stage-title {
+      font-weight: bold;
+      margin-bottom: 15px;
     }
-    .line {
-      position: absolute;
-      width: 50px;
-      height: 2px;
-      background: #ccc;
-      top: 50%;
-      right: -50px;
+    .final-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    button {
+      margin: 30px auto;
+      display: block;
+      background: #0097a7;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #007c91;
     }
   </style>
 </head>
 <body>
   <h2>نمودار جام حذفی پینگ‌پنگ</h2>
+  <button onclick="resetBracket()">🔄 ریست قرعه‌کشی</button>
   <div class="bracket" id="bracket"></div>
+
   <script>
     const players = ["صالح", "ناصر", "حمید", "مجید", "محمد", "امین", "فرزاد", "حسین"];
     let rounds = [];
@@ -76,38 +107,54 @@
     function renderBracket() {
       const bracket = document.getElementById("bracket");
       bracket.innerHTML = "";
+      const stages = ["یک‌چهارم نهایی", "نیمه‌نهایی", "فینال", "قهرمان"];
+
       for (let i = 0; i < rounds.length; i++) {
         const roundDiv = document.createElement("div");
         roundDiv.className = "round";
+
+        const stageTitle = document.createElement("div");
+        stageTitle.className = "stage-title";
+        stageTitle.textContent = stages[i] || "مرحله بعد";
+        roundDiv.appendChild(stageTitle);
+
         rounds[i].forEach((pair, index) => {
           const match = document.createElement("div");
           match.className = "match";
-          match.innerHTML = `${pair[0]}<br>vs<br>${pair[1]}`;
-          match.onclick = () => {
-            const winner = confirm(`${pair[0]} برنده شد؟ OK = بله / Cancel = ${pair[1]}`) ? pair[0] : pair[1];
-            if (!rounds[i + 1]) rounds[i + 1] = [];
-            rounds[i + 1][Math.floor(index / 2)] = rounds[i + 1][Math.floor(index / 2)] || [];
-            rounds[i + 1][Math.floor(index / 2)].push(winner);
-            if (rounds[i + 1][Math.floor(index / 2)].length === 2 || rounds[i + 1].length === 1) {
+
+          if (pair.length === 2) {
+            match.innerHTML = `${pair[0]}<br>vs<br>${pair[1]}`;
+            match.onclick = () => {
+              const winner = confirm(`${pair[0]} برنده شد؟ OK = بله / Cancel = ${pair[1]}`) ? pair[0] : pair[1];
+              if (!rounds[i + 1]) rounds[i + 1] = [];
+              rounds[i + 1][Math.floor(index / 2)] = rounds[i + 1][Math.floor(index / 2)] || [];
+              rounds[i + 1][Math.floor(index / 2)].push(winner);
               renderBracket();
-            }
-          };
+            };
+          } else {
+            match.textContent = pair[0];
+            match.classList.add("winner");
+          }
           roundDiv.appendChild(match);
         });
         bracket.appendChild(roundDiv);
       }
 
-      // اگر قهرمان مشخص شد:
-      if (rounds.length === 4 && rounds[3].length === 1 && rounds[3][0].length === 2) {
-        const champion = rounds[3][0][0];
+      // مرحله قهرمان نهایی
+      if (rounds.length === 4 && rounds[3].length === 1 && rounds[3][0].length === 1) {
         const finalDiv = document.createElement("div");
-        finalDiv.className = "round";
+        finalDiv.className = "round final-box";
         const winBox = document.createElement("div");
         winBox.className = "match winner";
-        winBox.textContent = `🏆 قهرمان: ${champion}`;
+        winBox.textContent = `🏆 قهرمان: ${rounds[3][0][0]}`;
         finalDiv.appendChild(winBox);
         bracket.appendChild(finalDiv);
       }
+    }
+
+    function resetBracket() {
+      buildInitialRounds();
+      renderBracket();
     }
 
     buildInitialRounds();
