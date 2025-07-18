@@ -2,7 +2,7 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>نمودار جام حذفی پینگ‌پنگ</title>
+  <title>نمودار حذفی حرفه‌ای</title>
   <style>
     body {
       font-family: sans-serif;
@@ -11,25 +11,18 @@
       padding: 20px;
       text-align: center;
     }
-
-    h2 {
-      margin-bottom: 30px;
-    }
-
     .bracket {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 40px;
       justify-items: center;
     }
-
     .column {
       display: grid;
       grid-template-rows: repeat(8, 1fr);
       gap: 20px;
       min-height: 600px;
     }
-
     .match {
       background: white;
       border: 2px solid #aaa;
@@ -38,36 +31,13 @@
       width: 120px;
       cursor: pointer;
       transition: 0.2s;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-
     .match:hover {
       background: #e3f2fd;
     }
-
     .winner {
       background: #c8e6c9;
       border-color: #2e7d32;
-    }
-
-    .stage-label {
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    button {
-      margin: 10px;
-      padding: 8px 14px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      background: #2196f3;
-      color: white;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #1976d2;
     }
   </style>
 </head>
@@ -76,9 +46,8 @@
   <h2>نمودار جام حذفی پینگ‌پنگ</h2>
 
   <div class="bracket">
-    <!-- یک‌هشتم نهایی -->
+    <!-- دور اول -->
     <div class="column">
-      <div class="stage-label">یک‌هشتم نهایی</div>
       <div class="match" id="m1a">صالح</div>
       <div class="match" id="m1b">ناصر</div>
       <div class="match" id="m2a">حمید</div>
@@ -89,36 +58,29 @@
       <div class="match" id="m4b">حسین</div>
     </div>
 
-    <!-- یک‌چهارم نهایی -->
+    <!-- نیمه نهایی -->
     <div class="column">
-      <div class="stage-label">یک‌چهارم نهایی</div>
       <div class="match" id="semi1"></div>
       <div class="match"></div>
       <div class="match" id="semi2"></div>
       <div class="match"></div>
     </div>
 
-    <!-- نیمه‌نهایی -->
+    <!-- فینال -->
     <div class="column">
-      <div class="stage-label">نیمه‌نهایی</div>
       <div class="match" id="final"></div>
     </div>
 
     <!-- قهرمان -->
     <div class="column">
-      <div class="stage-label">قهرمان</div>
       <div class="match" id="champion"></div>
     </div>
   </div>
 
   <br>
   <button onclick="resetTournament()">ریست</button>
-  <button onclick="saveBracketAsImage()">ذخیره نمودار به‌صورت عکس</button>
 
-  <!-- کتابخانه‌ها -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
   <script>
     const matchMap = {
       'm1a': 'semi1',
@@ -146,16 +108,15 @@
               LeaderLine.pointAnchor(to, {x: "0%", y: "50%"}),
               {
                 color: '#666',
-                path: 'grid', // خط L شکل
+                path: 'straight',
                 startPlug: 'disc',
                 endPlug: 'arrow1',
-                size: 2,
-                dash: false
+                size: 2
               }
             ));
           }
         }
-      }, 300);
+      }, 400); // تاخیر برای DOM کامل
     }
 
     function handleClick(e) {
@@ -179,16 +140,6 @@
         }
       });
       drawLines();
-    }
-
-    function saveBracketAsImage() {
-      const bracket = document.querySelector('.bracket');
-      html2canvas(bracket).then(canvas => {
-        const link = document.createElement('a');
-        link.download = 'bracket.png';
-        link.href = canvas.toDataURL();
-        link.click();
-      });
     }
 
     document.querySelectorAll('.match').forEach(m => {
