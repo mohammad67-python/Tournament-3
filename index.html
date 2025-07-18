@@ -2,104 +2,116 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نمودار جام حذفی</title>
+  <title>جام حذفی پینگ‌پنگ</title>
   <style>
     body {
-      font-family: Tahoma, sans-serif;
-      background: #f5f5f5;
+      font-family: sans-serif;
+      background: #f0f0f0;
+      margin: 0;
       padding: 20px;
       direction: rtl;
     }
     .bracket {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(4, 200px);
+      gap: 20px;
+      overflow-x: auto;
       justify-content: center;
-      align-items: flex-start;
-      flex-wrap: nowrap;
     }
     .round {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin: 0 15px;
+      gap: 40px;
+      position: relative;
     }
     .match {
       background: #fff;
-      border: 1px solid #ccc;
+      border: 2px solid #ccc;
       border-radius: 10px;
       padding: 10px;
-      margin: 10px 0;
-      width: 120px;
       text-align: center;
       cursor: pointer;
-      transition: background 0.3s;
+      min-width: 120px;
+      position: relative;
     }
-    .match:hover {
-      background: #d7ffd7;
-    }
-    .winner {
-      background: #4caf50 !important;
-      color: #fff;
+    .match.winner {
+      background-color: #4caf50;
+      color: white;
+      border-color: #388e3c;
     }
     h2 {
       text-align: center;
     }
+    .line {
+      position: absolute;
+      width: 50px;
+      height: 2px;
+      background: #ccc;
+      top: 50%;
+      right: -50px;
+    }
   </style>
 </head>
 <body>
-  <h2>جام حذفی پینگ‌پنگ</h2>
+  <h2>نمودار جام حذفی پینگ‌پنگ</h2>
   <div class="bracket" id="bracket"></div>
   <script>
     const players = ["صالح", "ناصر", "حمید", "مجید", "محمد", "امین", "فرزاد", "حسین"];
+    let rounds = [];
 
-    let currentRound = [shuffle(players)];
-
-    function shuffle(array) {
-      return array.sort(() => Math.random() - 0.5);
+    function shuffle(arr) {
+      return arr.sort(() => Math.random() - 0.5);
     }
 
-    function createBracket() {
-      const container = document.getElementById("bracket");
-      container.innerHTML = "";
-      let roundIndex = 0;
-      let rounds = [...currentRound];
+    function buildInitialRounds() {
+      rounds = [];
+      let shuffled = shuffle([...players]);
+      rounds.push([]);
+      for (let i = 0; i < shuffled.length; i += 2) {
+        rounds[0].push([shuffled[i], shuffled[i + 1]]);
+      }
+    }
 
-      while (rounds[roundIndex].length > 1) {
-        const round = rounds[roundIndex];
-        const nextRound = [];
+    function renderBracket() {
+      const bracket = document.getElementById("bracket");
+      bracket.innerHTML = "";
+      for (let i = 0; i < rounds.length; i++) {
         const roundDiv = document.createElement("div");
         roundDiv.className = "round";
-
-        for (let i = 0; i < round.length; i += 2) {
-          const matchDiv = document.createElement("div");
-          matchDiv.className = "match";
-          matchDiv.innerHTML = `${round[i]}<br>vs<br>${round[i+1]}`;
-          matchDiv.onclick = () => {
-            const winner = confirm(`${round[i]} برنده شد؟ OK = بله / Cancel = ${round[i+1]}`) ? round[i] : round[i+1];
-            nextRound.push(winner);
-            currentRound[roundIndex + 1] = nextRound;
-            createBracket();
+        rounds[i].forEach((pair, index) => {
+          const match = document.createElement("div");
+          match.className = "match";
+          match.innerHTML = `${pair[0]}<br>vs<br>${pair[1]}`;
+          match.onclick = () => {
+            const winner = confirm(`${pair[0]} برنده شد؟ OK = بله / Cancel = ${pair[1]}`) ? pair[0] : pair[1];
+            if (!rounds[i + 1]) rounds[i + 1] = [];
+            rounds[i + 1][Math.floor(index / 2)] = rounds[i + 1][Math.floor(index / 2)] || [];
+            rounds[i + 1][Math.floor(index / 2)].push(winner);
+            if (rounds[i + 1][Math.floor(index / 2)].length === 2 || rounds[i + 1].length === 1) {
+              renderBracket();
+            }
           };
-          roundDiv.appendChild(matchDiv);
-        }
-        container.appendChild(roundDiv);
-        roundIndex++;
-        rounds.push(nextRound);
+          roundDiv.appendChild(match);
+        });
+        bracket.appendChild(roundDiv);
       }
 
-      // نهایی (قهرمان)
-      if (rounds[roundIndex].length === 1) {
+      // اگر قهرمان مشخص شد:
+      if (rounds.length === 4 && rounds[3].length === 1 && rounds[3][0].length === 2) {
+        const champion = rounds[3][0][0];
         const finalDiv = document.createElement("div");
         finalDiv.className = "round";
-        const winnerDiv = document.createElement("div");
-        winnerDiv.className = "match winner";
-        winnerDiv.innerText = `🏆 قهرمان: ${rounds[roundIndex][0]}`;
-        finalDiv.appendChild(winnerDiv);
-        container.appendChild(finalDiv);
+        const winBox = document.createElement("div");
+        winBox.className = "match winner";
+        winBox.textContent = `🏆 قهرمان: ${champion}`;
+        finalDiv.appendChild(winBox);
+        bracket.appendChild(finalDiv);
       }
     }
 
-    createBracket();
+    buildInitialRounds();
+    renderBracket();
   </script>
 </body>
 </html>
