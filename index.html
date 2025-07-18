@@ -1,62 +1,52 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8" />
-  <title>جام حذفی پینگ‌پنگ</title>
+  <meta charset="UTF-8">
+  <title>نمودار حذفی حرفه‌ای</title>
   <style>
     body {
-      font-family: Vazirmatn, sans-serif;
+      font-family: sans-serif;
       direction: rtl;
+      background: #f0f0f0;
+      padding: 20px;
       text-align: center;
-      background: #f9f9f9;
-      margin: 20px;
     }
     .bracket {
-      display: flex;
-      justify-content: space-evenly;
-      align-items: center;
-      flex-direction: row-reverse;
-      flex-wrap: nowrap;
-      gap: 20px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      justify-items: center;
     }
     .column {
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
+      display: grid;
+      grid-template-rows: repeat(8, 1fr);
+      gap: 20px;
+      min-height: 600px;
     }
     .match {
-      padding: 10px 15px;
-      background: #fff;
-      border: 2px solid #ccc;
-      border-radius: 12px;
+      background: white;
+      border: 2px solid #aaa;
+      border-radius: 10px;
+      padding: 10px;
+      width: 120px;
       cursor: pointer;
-      min-width: 100px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      transition: all 0.2s;
+      transition: 0.2s;
     }
     .match:hover {
-      background: #e0f7fa;
+      background: #e3f2fd;
     }
     .winner {
-      background: #a5d6a7 !important;
-      border-color: #388e3c !important;
-    }
-    button {
-      margin-top: 30px;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      background: #0288d1;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
+      background: #c8e6c9;
+      border-color: #2e7d32;
     }
   </style>
 </head>
 <body>
 
   <h2>نمودار جام حذفی پینگ‌پنگ</h2>
+
   <div class="bracket">
+    <!-- دور اول -->
     <div class="column">
       <div class="match" id="m1a">صالح</div>
       <div class="match" id="m1b">ناصر</div>
@@ -67,33 +57,39 @@
       <div class="match" id="m4a">فرزاد</div>
       <div class="match" id="m4b">حسین</div>
     </div>
+
+    <!-- نیمه نهایی -->
     <div class="column">
       <div class="match" id="semi1"></div>
+      <div class="match"></div>
       <div class="match" id="semi2"></div>
-      <div class="match" id="semi3"></div>
-      <div class="match" id="semi4"></div>
+      <div class="match"></div>
     </div>
+
+    <!-- فینال -->
     <div class="column">
-      <div class="match" id="final1"></div>
-      <div class="match" id="final2"></div>
+      <div class="match" id="final"></div>
     </div>
+
+    <!-- قهرمان -->
     <div class="column">
       <div class="match" id="champion"></div>
     </div>
   </div>
 
-  <button onclick="resetTournament()">ریست مسابقات</button>
+  <br>
+  <button onclick="resetTournament()">ریست</button>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
   <script>
     const matchMap = {
-      'm1a': 'semi1', 'm1b': 'semi1',
-      'm2a': 'semi2', 'm2b': 'semi2',
-      'm3a': 'semi3', 'm3b': 'semi3',
-      'm4a': 'semi4', 'm4b': 'semi4',
-      'semi1': 'final1', 'semi2': 'final1',
-      'semi3': 'final2', 'semi4': 'final2',
-      'final1': 'champion', 'final2': 'champion'
+      'm1a': 'semi1',
+      'm1b': 'semi1',
+      'm2a': 'semi2',
+      'm2b': 'semi2',
+      'semi1': 'final',
+      'semi2': 'final',
+      'final': 'champion'
     };
 
     const lines = [];
@@ -103,50 +99,56 @@
       lines.length = 0;
 
       setTimeout(() => {
-        for (const [fromId, toId] of Object.entries(matchMap)) {
-          const fromEl = document.getElementById(fromId);
-          const toEl = document.getElementById(toId);
-          if (fromEl && toEl && fromEl.textContent.trim()) {
-            lines.push(new LeaderLine(fromEl, toEl, {
-              color: '#888',
-              size: 2,
-              path: 'fluid',
-              startPlug: 'disc',
-              endPlug: 'arrow1'
-            }));
+        for (let [fromId, toId] of Object.entries(matchMap)) {
+          const from = document.getElementById(fromId);
+          const to = document.getElementById(toId);
+          if (from && to && from.textContent.trim()) {
+            lines.push(new LeaderLine(
+              LeaderLine.pointAnchor(from, {x: "100%", y: "50%"}),
+              LeaderLine.pointAnchor(to, {x: "0%", y: "50%"}),
+              {
+                color: '#666',
+                path: 'straight',
+                startPlug: 'disc',
+                endPlug: 'arrow1',
+                size: 2
+              }
+            ));
           }
         }
-      }, 300); // تأخیر برای رندر کامل DOM
+      }, 400); // تاخیر برای DOM کامل
     }
 
     function handleClick(e) {
-      const el = e.target;
-      const nextId = matchMap[el.id];
+      const current = e.target;
+      const nextId = matchMap[current.id];
       if (!nextId) return;
 
-      const nextEl = document.getElementById(nextId);
-      if (!nextEl) return;
+      const next = document.getElementById(nextId);
+      if (!next) return;
 
-      nextEl.textContent = el.textContent;
-      nextEl.classList.add('winner');
+      next.textContent = current.textContent;
+      next.classList.add("winner");
       drawLines();
     }
 
     function resetTournament() {
-      document.querySelectorAll('.match').forEach(el => {
-        const id = el.id;
-        el.classList.remove('winner');
-        if (!id.startsWith('m')) el.textContent = '';
+      document.querySelectorAll('.match').forEach(m => {
+        if (!m.id.startsWith('m')) {
+          m.textContent = '';
+          m.classList.remove('winner');
+        }
       });
       drawLines();
     }
 
-    document.querySelectorAll('.match').forEach(el => {
-      el.addEventListener('click', handleClick);
+    document.querySelectorAll('.match').forEach(m => {
+      m.addEventListener('click', handleClick);
     });
 
     window.addEventListener('load', drawLines);
     window.addEventListener('resize', drawLines);
   </script>
+
 </body>
 </html>
