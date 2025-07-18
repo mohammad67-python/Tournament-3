@@ -2,52 +2,64 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>نمودار حذفی حرفه‌ای</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نمودار حذفی واکنش‌گرا</title>
   <style>
     body {
       font-family: sans-serif;
       direction: rtl;
-      background: #f0f0f0;
+      background: #f9f9f9;
+      margin: 0;
       padding: 20px;
       text-align: center;
     }
-    .bracket {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 40px;
-      justify-items: center;
+    h2 {
+      margin-bottom: 30px;
     }
-    .column {
-      display: grid;
-      grid-template-rows: repeat(8, 1fr);
+    .stage-label {
+      font-weight: bold;
+      margin: 20px 0 10px;
+    }
+    .bracket {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       gap: 20px;
-      min-height: 600px;
+    }
+    .round {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     .match {
-      background: white;
+      background: #fff;
       border: 2px solid #aaa;
       border-radius: 10px;
-      padding: 10px;
-      width: 120px;
+      padding: 10px 20px;
+      min-width: 140px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: 0.3s;
     }
     .match:hover {
-      background: #e3f2fd;
+      background-color: #e3f2fd;
     }
     .winner {
       background: #c8e6c9;
       border-color: #2e7d32;
     }
+    @media (max-width: 600px) {
+      .match {
+        min-width: 100px;
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 <body>
-
   <h2>نمودار جام حذفی پینگ‌پنگ</h2>
-
   <div class="bracket">
-    <!-- دور اول -->
-    <div class="column">
+    <div class="stage-label">یک‌هشتم نهایی</div>
+    <div class="round" id="round1">
       <div class="match" id="m1a">صالح</div>
       <div class="match" id="m1b">ناصر</div>
       <div class="match" id="m2a">حمید</div>
@@ -58,21 +70,19 @@
       <div class="match" id="m4b">حسین</div>
     </div>
 
-    <!-- نیمه نهایی -->
-    <div class="column">
+    <div class="stage-label">یک‌چهارم نهایی</div>
+    <div class="round">
       <div class="match" id="semi1"></div>
-      <div class="match"></div>
       <div class="match" id="semi2"></div>
-      <div class="match"></div>
     </div>
 
-    <!-- فینال -->
-    <div class="column">
+    <div class="stage-label">نیمه‌نهایی</div>
+    <div class="round">
       <div class="match" id="final"></div>
     </div>
 
-    <!-- قهرمان -->
-    <div class="column">
+    <div class="stage-label">قهرمان</div>
+    <div class="round">
       <div class="match" id="champion"></div>
     </div>
   </div>
@@ -80,7 +90,6 @@
   <br>
   <button onclick="resetTournament()">ریست</button>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
   <script>
     const matchMap = {
       'm1a': 'semi1',
@@ -92,33 +101,6 @@
       'final': 'champion'
     };
 
-    const lines = [];
-
-    function drawLines() {
-      lines.forEach(line => line.remove());
-      lines.length = 0;
-
-      setTimeout(() => {
-        for (let [fromId, toId] of Object.entries(matchMap)) {
-          const from = document.getElementById(fromId);
-          const to = document.getElementById(toId);
-          if (from && to && from.textContent.trim()) {
-            lines.push(new LeaderLine(
-              LeaderLine.pointAnchor(from, {x: "100%", y: "50%"}),
-              LeaderLine.pointAnchor(to, {x: "0%", y: "50%"}),
-              {
-                color: '#666',
-                path: 'straight',
-                startPlug: 'disc',
-                endPlug: 'arrow1',
-                size: 2
-              }
-            ));
-          }
-        }
-      }, 400); // تاخیر برای DOM کامل
-    }
-
     function handleClick(e) {
       const current = e.target;
       const nextId = matchMap[current.id];
@@ -129,7 +111,6 @@
 
       next.textContent = current.textContent;
       next.classList.add("winner");
-      drawLines();
     }
 
     function resetTournament() {
@@ -139,16 +120,11 @@
           m.classList.remove('winner');
         }
       });
-      drawLines();
     }
 
     document.querySelectorAll('.match').forEach(m => {
       m.addEventListener('click', handleClick);
     });
-
-    window.addEventListener('load', drawLines);
-    window.addEventListener('resize', drawLines);
   </script>
-
 </body>
 </html>
