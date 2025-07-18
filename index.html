@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>قرعه‌کشی پینگ‌پنگ</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      direction: rtl;
+      text-align: center;
+      background-color: #f0f0f0;
+    }
+    .round {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .match {
+      background: white;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px gray;
+      cursor: pointer;
+    }
+    .winner {
+      background: #4caf50;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h2>جام پینگ‌پنگ شیفت C</h2>
+  <div id="tournament">
+    <div class="round" id="round1"></div>
+    <div class="round" id="round2"></div>
+    <div class="round" id="final"></div>
+  </div>
+
+  <script>
+    const players = ["صالح", "ناصر", "حمید", "مجید", "محمد", "امین", "فرزاد", "حسین"];
+    let shuffled = players.sort(() => 0.5 - Math.random());
+
+    let round1 = document.getElementById("round1");
+    let round2 = document.getElementById("round2");
+    let final = document.getElementById("final");
+
+    function createMatch(name1, name2, nextRound, nextList) {
+      let match = document.createElement("div");
+      match.className = "match";
+      match.innerHTML = `${name1} <br> VS <br> ${name2}`;
+      match.addEventListener("click", () => {
+        let winner = confirm(`${name1} برده؟ اگر نه، ${name2} برنده میشه`);
+        let winName = winner ? name1 : name2;
+        match.classList.add("winner");
+        match.innerHTML = `✅ ${winName}`;
+        if (nextRound && nextList.length < 4) {
+          nextList.push(winName);
+          if (nextList.length % 2 === 0) {
+            createMatch(nextList[nextList.length - 2], nextList[nextList.length - 1], nextRound, []);
+          }
+        } else if (!nextRound && nextList.length < 2) {
+          nextList.push(winName);
+          final.innerHTML = `<div class="match winner">🏆 قهرمان: ${winName}</div>`;
+        }
+      });
+      nextRound.appendChild(match);
+    }
+
+    let winnersR2 = [], winnersFinal = [];
+
+    for (let i = 0; i < shuffled.length; i += 2) {
+      createMatch(shuffled[i], shuffled[i + 1], round2, winnersR2);
+    }
+  </script>
+</body>
+</html>
