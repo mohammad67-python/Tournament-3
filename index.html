@@ -2,74 +2,62 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>نمودار جام حذفی پینگ‌پنگ</title>
+  <title>جام حذفی پینگ‌پنگ</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
-
     body {
-      font-family: 'Vazirmatn', sans-serif;
-      background-color: #f9f9f9;
-      margin: 0;
-      padding: 20px;
+      font-family: Vazirmatn, sans-serif;
       direction: rtl;
-    }
-
-    h1 {
       text-align: center;
-      margin-bottom: 30px;
+      background: #f9f9f9;
+      margin: 20px;
     }
-
     .bracket {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 40px;
-      justify-items: center;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      flex-direction: row-reverse;
+      flex-wrap: nowrap;
+      gap: 20px;
     }
-
-    .round {
+    .column {
       display: flex;
       flex-direction: column;
-      gap: 60px;
-      position: relative;
+      gap: 40px;
     }
-
     .match {
-      background-color: white;
+      padding: 10px 15px;
+      background: #fff;
       border: 2px solid #ccc;
-      border-radius: 10px;
-      padding: 10px 20px;
-      min-width: 120px;
-      text-align: center;
+      border-radius: 12px;
       cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      min-width: 100px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: all 0.2s;
     }
-
+    .match:hover {
+      background: #e0f7fa;
+    }
     .winner {
-      background-color: #4caf50;
-      color: white;
-      border-color: #388e3c;
+      background: #a5d6a7 !important;
+      border-color: #388e3c !important;
     }
-
     button {
-      display: block;
-      margin: 30px auto;
+      margin-top: 30px;
       padding: 10px 20px;
       font-size: 16px;
       border: none;
-      border-radius: 8px;
-      background-color: #1976d2;
+      background: #0288d1;
       color: white;
+      border-radius: 8px;
       cursor: pointer;
     }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
 </head>
 <body>
-  <h1>جام حذفی پینگ‌پنگ - شیفت C</h1>
-  <div class="bracket" id="bracket">
-    <!-- مرحله 1 -->
-    <div class="round" id="round1">
+
+  <h2>نمودار جام حذفی پینگ‌پنگ</h2>
+  <div class="bracket">
+    <div class="column">
       <div class="match" id="m1a">صالح</div>
       <div class="match" id="m1b">ناصر</div>
       <div class="match" id="m2a">حمید</div>
@@ -79,25 +67,24 @@
       <div class="match" id="m4a">فرزاد</div>
       <div class="match" id="m4b">حسین</div>
     </div>
-    <!-- نیمه نهایی -->
-    <div class="round" id="round2">
+    <div class="column">
       <div class="match" id="semi1"></div>
       <div class="match" id="semi2"></div>
       <div class="match" id="semi3"></div>
       <div class="match" id="semi4"></div>
     </div>
-    <!-- فینال -->
-    <div class="round" id="round3">
+    <div class="column">
       <div class="match" id="final1"></div>
       <div class="match" id="final2"></div>
     </div>
-    <!-- قهرمان -->
-    <div class="round" id="round4">
+    <div class="column">
       <div class="match" id="champion"></div>
     </div>
   </div>
-  <button onclick="resetBracket()">ریست قرعه‌کشی</button>
 
+  <button onclick="resetTournament()">ریست مسابقات</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
   <script>
     const matchMap = {
       'm1a': 'semi1', 'm1b': 'semi1',
@@ -111,41 +98,55 @@
 
     const lines = [];
 
-    document.querySelectorAll('.match').forEach(el => {
-      el.addEventListener('click', () => {
-        if (!el.innerText.trim()) return;
-        const nextId = matchMap[el.id];
-        if (!nextId) return;
-        const nextEl = document.getElementById(nextId);
-        nextEl.innerText = el.innerText;
-        nextEl.classList.add('winner');
-        drawLines();
-      });
-    });
-
-    function resetBracket() {
-      document.querySelectorAll('.match').forEach(el => {
-        const initial = el.id.match(/^m[1-4][ab]$/);
-        if (!initial) {
-          el.innerText = '';
-          el.classList.remove('winner');
-        }
-      });
-      lines.forEach(line => line.remove());
-      lines.length = 0;
-    }
-
     function drawLines() {
       lines.forEach(line => line.remove());
       lines.length = 0;
-      for (const [fromId, toId] of Object.entries(matchMap)) {
-        const fromEl = document.getElementById(fromId);
-        const toEl = document.getElementById(toId);
-        if (fromEl && toEl && fromEl.innerText.trim()) {
-          lines.push(new LeaderLine(fromEl, toEl, {color: '#888', size: 2, path: 'straight'}));
+
+      setTimeout(() => {
+        for (const [fromId, toId] of Object.entries(matchMap)) {
+          const fromEl = document.getElementById(fromId);
+          const toEl = document.getElementById(toId);
+          if (fromEl && toEl && fromEl.textContent.trim()) {
+            lines.push(new LeaderLine(fromEl, toEl, {
+              color: '#888',
+              size: 2,
+              path: 'fluid',
+              startPlug: 'disc',
+              endPlug: 'arrow1'
+            }));
+          }
         }
-      }
+      }, 300); // تأخیر برای رندر کامل DOM
     }
+
+    function handleClick(e) {
+      const el = e.target;
+      const nextId = matchMap[el.id];
+      if (!nextId) return;
+
+      const nextEl = document.getElementById(nextId);
+      if (!nextEl) return;
+
+      nextEl.textContent = el.textContent;
+      nextEl.classList.add('winner');
+      drawLines();
+    }
+
+    function resetTournament() {
+      document.querySelectorAll('.match').forEach(el => {
+        const id = el.id;
+        el.classList.remove('winner');
+        if (!id.startsWith('m')) el.textContent = '';
+      });
+      drawLines();
+    }
+
+    document.querySelectorAll('.match').forEach(el => {
+      el.addEventListener('click', handleClick);
+    });
+
+    window.addEventListener('load', drawLines);
+    window.addEventListener('resize', drawLines);
   </script>
 </body>
 </html>
