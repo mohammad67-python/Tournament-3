@@ -2,14 +2,14 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>جام حذفی پینگ‌پنگ (۸ نفره)</title>
+  <title>جدول جام حذفی ۸ نفره</title>
   <style>
     body {
-      background: #1c1c1c;
-      color: #fff;
+      background-color: #111;
+      color: white;
       font-family: sans-serif;
       direction: rtl;
-      padding: 30px;
+      padding: 40px;
     }
 
     h2 {
@@ -22,29 +22,31 @@
     .bracket {
       display: flex;
       justify-content: center;
-      gap: 40px;
-      flex-wrap: wrap;
+      align-items: center;
+      gap: 60px;
     }
 
     .round {
       display: flex;
       flex-direction: column;
       gap: 40px;
+      position: relative;
     }
 
     .match {
-      background: #2b2b2b;
-      border: 2px solid #666;
+      background: #222;
+      border: 2px solid #555;
       border-radius: 10px;
       padding: 10px 20px;
       text-align: center;
       min-width: 140px;
       cursor: pointer;
       transition: 0.3s;
+      position: relative;
     }
 
     .match:hover {
-      background: #3a3a3a;
+      background: #333;
     }
 
     .winner {
@@ -53,11 +55,35 @@
       color: #fff;
     }
 
+    .line-right {
+      position: absolute;
+      top: 50%;
+      right: -30px;
+      width: 30px;
+      height: 2px;
+      background: #888;
+    }
+
+    .line-down {
+      position: absolute;
+      right: -30px;
+      width: 2px;
+      height: 80px;
+      background: #888;
+    }
+
+    .connector {
+      position: absolute;
+      right: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
     .champion-label {
       text-align: center;
-      font-weight: bold;
       color: gold;
       margin-top: 10px;
+      font-weight: bold;
     }
 
     button {
@@ -66,58 +92,48 @@
       border: none;
       padding: 10px 20px;
       border-radius: 10px;
-      margin: 30px auto;
+      margin: 40px auto;
       display: block;
       font-weight: bold;
       font-size: 16px;
       cursor: pointer;
     }
-
-    @media (max-width: 768px) {
-      .bracket {
-        flex-direction: column;
-        align-items: center;
-      }
-    }
   </style>
 </head>
 <body>
 
-<h2>جام حذفی پینگ‌پنگ (۸ نفره)</h2>
+<h2>جدول جام حذفی پینگ‌پنگ (۸ نفر)</h2>
 
 <div class="bracket">
   <!-- مرحله اول -->
   <div class="round">
-    <div class="match" id="m1a">صالح</div>
-    <div class="match" id="m1b">ناصر</div>
-
-    <div class="match" id="m2a">حمید</div>
-    <div class="match" id="m2b">مجید</div>
-
-    <div class="match" id="m3a">محمد</div>
-    <div class="match" id="m3b">امین</div>
-
-    <div class="match" id="m4a">فرزاد</div>
-    <div class="match" id="m4b">حسین</div>
+    <div class="match" id="m1a">صالح<div class="line-right"></div></div>
+    <div class="match" id="m1b">ناصر<div class="line-right"></div></div>
+    <div class="match" id="m2a">حمید<div class="line-right"></div></div>
+    <div class="match" id="m2b">مجید<div class="line-right"></div></div>
+    <div class="match" id="m3a">محمد<div class="line-right"></div></div>
+    <div class="match" id="m3b">امین<div class="line-right"></div></div>
+    <div class="match" id="m4a">فرزاد<div class="line-right"></div></div>
+    <div class="match" id="m4b">حسین<div class="line-right"></div></div>
   </div>
 
   <!-- یک‌چهارم -->
   <div class="round">
-    <div class="match" id="q1"></div>
-    <div class="match" id="q2"></div>
-    <div class="match" id="q3"></div>
-    <div class="match" id="q4"></div>
+    <div class="match" id="q1">‌<div class="line-right"></div></div>
+    <div class="match" id="q2"><div class="line-right"></div></div>
+    <div class="match" id="q3"><div class="line-right"></div></div>
+    <div class="match" id="q4"><div class="line-right"></div></div>
   </div>
 
-  <!-- نیمه‌نهایی -->
+  <!-- نیمه نهایی -->
   <div class="round">
-    <div class="match" id="s1"></div>
-    <div class="match" id="s2"></div>
+    <div class="match" id="s1"><div class="line-right"></div></div>
+    <div class="match" id="s2"><div class="line-right"></div></div>
   </div>
 
   <!-- فینال -->
   <div class="round">
-    <div class="match" id="f1"></div>
+    <div class="match" id="f1"><div class="line-right"></div></div>
   </div>
 
   <!-- قهرمان -->
@@ -153,7 +169,7 @@
   };
 
   function handleClick(e) {
-    const current = e.target;
+    const current = e.target.closest('.match');
     const nextId = matchMap[current.id];
     if (!nextId) return;
 
@@ -170,7 +186,7 @@
     if (alreadySelected) return;
 
     current.classList.add("winner");
-    next.textContent = current.textContent;
+    next.textContent = current.textContent.trim();
     next.classList.add("winner");
   }
 
@@ -180,6 +196,9 @@
       if (el && !id.startsWith('m')) {
         el.textContent = '';
         el.classList.remove('winner');
+        const line = document.createElement('div');
+        line.className = 'line-right';
+        el.appendChild(line);
       }
     });
     document.querySelectorAll('.match').forEach(el => el.classList.remove('winner'));
