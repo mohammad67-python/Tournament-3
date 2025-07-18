@@ -7,69 +7,58 @@
     body {
       font-family: sans-serif;
       direction: rtl;
-      background: #f8f9fa;
+      background: #f0f0f0;
       padding: 20px;
+      text-align: center;
     }
     h2 {
-      text-align: center;
       margin-bottom: 30px;
     }
-    .bracket-container {
+    .bracket {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 20px;
-      justify-items: center;
-      align-items: start;
+      grid-template-columns: repeat(4, 160px);
+      gap: 30px;
+      justify-content: center;
     }
     .column {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 20px;
+      justify-content: space-around;
+      height: 600px;
     }
     .stage-title {
-      font-weight: bold;
       margin-bottom: 10px;
-      color: #333;
+      font-weight: bold;
+      font-size: 16px;
+      color: #444;
     }
     .match {
-      background: white;
-      border: 2px solid #ccc;
-      padding: 10px 15px;
+      background: #fff;
+      border: 2px solid #aaa;
       border-radius: 10px;
-      width: 120px;
-      text-align: center;
+      padding: 10px;
       cursor: pointer;
-      transition: 0.3s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: all 0.2s;
     }
     .match:hover {
-      background: #e3f2fd;
+      background: #e0f7fa;
     }
     .winner {
       background: #c8e6c9;
       border-color: #2e7d32;
     }
-    button {
-      margin: 30px auto;
-      display: block;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 8px;
-      border: none;
-      background: #2196f3;
-      color: white;
-    }
   </style>
 </head>
 <body>
 
-  <h2>جام حذفی پینگ‌پنگ (شیفت C)</h2>
+  <h2>نمودار جام حذفی پینگ‌پنگ</h2>
 
-  <div class="bracket-container">
-    <!-- مرحله اول -->
+  <div class="bracket">
+
+    <!-- یک‌هشتم نهایی -->
     <div class="column">
-      <div class="stage-title">یک‌هشتم نهایی</div>
+      <div class="stage-title">1/8 نهایی</div>
       <div class="match" id="m1a">صالح</div>
       <div class="match" id="m1b">ناصر</div>
       <div class="match" id="m2a">حمید</div>
@@ -80,9 +69,9 @@
       <div class="match" id="m4b">حسین</div>
     </div>
 
-    <!-- یک‌چهارم -->
+    <!-- یک‌چهارم نهایی -->
     <div class="column">
-      <div class="stage-title">یک‌چهارم نهایی</div>
+      <div class="stage-title">1/4 نهایی</div>
       <div class="match" id="q1"></div>
       <div class="match" id="q2"></div>
       <div class="match" id="q3"></div>
@@ -98,60 +87,31 @@
 
     <!-- فینال -->
     <div class="column">
-      <div class="stage-title">فینال</div>
-      <div class="match" id="f1"></div>
-    </div>
-
-    <!-- قهرمان -->
-    <div class="column">
       <div class="stage-title">قهرمان</div>
-      <div class="match" id="champion"></div>
+      <div class="match" id="final"></div>
     </div>
   </div>
 
-  <button onclick="resetTournament()">ریست</button>
+  <br><br>
+  <button onclick="reset()">ریست</button>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
   <script>
     const matchMap = {
-      m1a: 'q1', m1b: 'q1',
-      m2a: 'q2', m2b: 'q2',
-      m3a: 'q3', m3b: 'q3',
-      m4a: 'q4', m4b: 'q4',
-      q1: 's1', q2: 's1',
-      q3: 's2', q4: 's2',
-      s1: 'f1', s2: 'f1',
-      f1: 'champion'
+      'm1a': 'q1',
+      'm1b': 'q1',
+      'm2a': 'q2',
+      'm2b': 'q2',
+      'm3a': 'q3',
+      'm3b': 'q3',
+      'm4a': 'q4',
+      'm4b': 'q4',
+      'q1': 's1',
+      'q2': 's1',
+      'q3': 's2',
+      'q4': 's2',
+      's1': 'final',
+      's2': 'final'
     };
-
-    const lines = [];
-
-    function drawLines() {
-      lines.forEach(line => line.remove());
-      lines.length = 0;
-
-      setTimeout(() => {
-        for (const [fromId, toId] of Object.entries(matchMap)) {
-          const fromEl = document.getElementById(fromId);
-          const toEl = document.getElementById(toId);
-          if (fromEl && toEl && fromEl.textContent.trim()) {
-            const line = new LeaderLine(
-              LeaderLine.pointAnchor(fromEl, {x: '100%', y: '50%'}),
-              LeaderLine.pointAnchor(toEl, {x: '0%', y: '50%'}),
-              {
-                color: '#777',
-                path: 'grid',
-                startPlug: 'disc',
-                endPlug: 'arrow1',
-                size: 2,
-                dash: false
-              }
-            );
-            lines.push(line);
-          }
-        }
-      }, 300);
-    }
 
     function handleClick(e) {
       const current = e.target;
@@ -159,30 +119,25 @@
       if (!nextId) return;
 
       const next = document.getElementById(nextId);
-      if (!next || next.textContent.trim()) return;
-
-      next.textContent = current.textContent;
-      next.classList.add("winner");
-      drawLines();
+      if (next) {
+        next.textContent = current.textContent;
+        next.classList.add("winner");
+      }
     }
 
-    function resetTournament() {
-      Object.keys(matchMap).forEach(id => {
-        const el = document.getElementById(id);
-        if (el && !id.startsWith('m')) {
-          el.textContent = '';
-          el.classList.remove('winner');
+    function reset() {
+      document.querySelectorAll(".match").forEach(el => {
+        if (!el.id.startsWith('m')) {
+          el.textContent = "";
+          el.classList.remove("winner");
         }
       });
-      drawLines();
     }
 
-    document.querySelectorAll('.match').forEach(el => {
-      el.addEventListener('click', handleClick);
+    document.querySelectorAll(".match").forEach(el => {
+      el.addEventListener("click", handleClick);
     });
-
-    window.addEventListener('load', drawLines);
-    window.addEventListener('resize', drawLines);
   </script>
+
 </body>
 </html>
